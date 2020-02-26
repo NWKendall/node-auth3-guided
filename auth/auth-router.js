@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const { jwtSecret } = require('../config/secrets')
 const Users = require('../users/users-model.js');
 
 // for endpoints beginning with /api/auth
@@ -30,7 +30,7 @@ router.post('/login', (req, res) => {
         const token = generateToken(user);
         res.status(200).json({
           message: `Welcome ${user.username}!`,
-          token // sends token
+          token // sends token in json payload
         });
       } else {
         res.status(401).json({ message: 'Invalid Credentials' });
@@ -47,10 +47,9 @@ function generateToken(user) {
   const payload = {
     username: user.username,
   }
-  const secret = process.env.JWT_SECRET || `what ever you need`
   const options = {
     expiresIn: "1h"
   }
-  return jwt.sign(payload, secret, options);
+  return jwt.sign(payload, jwtSecret, options);
 }
 module.exports = router;
